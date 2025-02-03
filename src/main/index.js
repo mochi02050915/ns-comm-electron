@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, dialog, Menu } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -9,14 +9,29 @@ function createWindow() {
     width: 900,
     height: 670,
     show: false,
-    autoHideMenuBar: true,
+    autoHideMenuBar: false,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false
     }
   })
-
+  const menu = Menu.buildFromTemplate([
+    {
+      label: app.name,
+      submenu: [
+        {
+          click: () => mainWindow.webContents.send('update-counter', 1),
+          label: 'Increment'
+        },
+        {
+          click: () => mainWindow.webContents.send('update-counter', -1),
+          label: 'Decrement'
+        }
+      ]
+    }
+  ])
+  Menu.setApplicationMenu(menu)
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
   })
@@ -26,6 +41,8 @@ function createWindow() {
     return { action: 'deny' }
   })
 
+  ipcMain.on('start-flash', () => mainWindow.flashFrame(true))
+  ipcMain.on('stop-flash', () => mainWindow.flashFrame(false))
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
@@ -52,6 +69,8 @@ app.whenReady().then(() => {
   // IPC test
   ipcMain.on('ping', () => console.log('pong'))
 
+  ipcMain.handle('open-dialog', openFolder)
+
   createWindow()
 
   app.on('activate', function () {
@@ -72,3 +91,10 @@ app.on('window-all-closed', () => {
 
 // In this file you can include the rest of your app"s specific main process
 // code. You can also put them in separate files and require them here.
+const openFolder = async () => {
+  const { canceled, filePaths } = await dialog.showOpenDialog({})
+  if (!canceled) {
+    console.log(filePaths[0])
+    return filePaths[0]
+  }
+}

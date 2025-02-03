@@ -1,24 +1,32 @@
 <script setup>
-import Versions from './components/Versions.vue'
+// import Versions from './components/Versions.vue'
+import { RouterView } from 'vue-router'
 
-const ipcHandle = () => window.electron.ipcRenderer.send('ping')
+const folder = () => window.electron.ipcRenderer.send('ping')
 </script>
 
 <template>
-  <img alt="logo" class="logo" src="./assets/electron.svg" />
-  <div class="creator">Powered by electron-vite</div>
-  <div class="text">
-    Build an Electron app with
-    <span class="vue">Vue</span>
-  </div>
-  <p class="tip">Please try pressing <code>F12</code> to open the devTool</p>
-  <div class="actions">
-    <div class="action">
-      <a href="https://electron-vite.org/" target="_blank" rel="noreferrer">Documentation</a>
-    </div>
-    <div class="action">
-      <a target="_blank" rel="noreferrer" @click="ipcHandle">Send IPC</a>
-    </div>
-  </div>
-  <Versions />
+  <el-row>
+    <el-col :span="5">
+      <el-menu router="true">
+        <!-- <el-menu-item index="1" @click="folder"> -->
+        <el-menu-item index="1" route="/folder">
+          <span>Folder</span>
+        </el-menu-item>
+        <el-menu-item index="2" route="/image">
+          <span>Image</span>
+        </el-menu-item>
+        <el-menu-item index="3" route="/counter">
+          <span>Counter</span>
+        </el-menu-item>
+      </el-menu>
+    </el-col>
+    <el-col :span="19">
+      <main>
+        <RouterView />
+      </main>
+    </el-col>
+  </el-row>
+
+  <!-- <Versions /> -->
 </template>
