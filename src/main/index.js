@@ -2,6 +2,7 @@ import { app, shell, BrowserWindow, ipcMain, dialog, Menu } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import fs from 'fs'
 
 function createWindow() {
   // Create the browser window.
@@ -70,6 +71,9 @@ app.whenReady().then(() => {
   ipcMain.on('ping', () => console.log('pong'))
 
   ipcMain.handle('open-dialog', openFolder)
+  ipcMain.handle('get-memo-list', getMemoList)
+  ipcMain.handle('get-memo-content', getMemoContent)
+  ipcMain.handle('save-memo-content', saveMemoContent)
 
   createWindow()
 
@@ -93,8 +97,21 @@ app.on('window-all-closed', () => {
 // code. You can also put them in separate files and require them here.
 const openFolder = async () => {
   const { canceled, filePaths } = await dialog.showOpenDialog({})
-  if (!canceled) {
-    console.log(filePaths[0])
-    return filePaths[0]
-  }
+  if (!canceled) return filePaths[0]
+}
+
+const getMemoList = async () => {
+  return fs.readdirSync('./memo')
+}
+const getMemoContent = async (_e, name) => {
+  if (!name) return
+  const content = fs.readFileSync(`./memo/${name}`)
+  const str = content.toString()
+  return str
+}
+const saveMemoContent = async (_e, name, content) => {
+  if (!name || !content) return
+  if (!(name.split('.').pop() === 'txt')) name += '.txt'
+  fs.writeFileSync(`./memo/${name}`, content)
+  return ''
 }

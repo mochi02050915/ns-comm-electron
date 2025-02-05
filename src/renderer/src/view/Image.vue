@@ -1,7 +1,9 @@
 <script setup>
 import { ref } from 'vue'
+
 const imageUrl = ref('')
 const fileInput = ref(null)
+
 const handleFileChange = async (_e) => {
   const file = _e.target.files[0]
   const reader = new FileReader()
@@ -10,13 +12,9 @@ const handleFileChange = async (_e) => {
   }
   reader.readAsDataURL(file)
 }
-
 const selectImage = () => {
   if (fileInput.value) fileInput.value.click()
 }
-window.electronAPI.onUpdateCounter((value) => {
-  console.log(value)
-})
 </script>
 
 <template>

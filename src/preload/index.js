@@ -13,8 +13,14 @@ if (process.contextIsolated) {
     contextBridge.exposeInMainWorld('api', api)
     contextBridge.exposeInMainWorld('electronAPI', {
       onUpdateCounter: (callback) =>
-        ipcRenderer.on('update-counter', (_event, value) => callback(value))
+        ipcRenderer.on('update-counter', (_event, value) => callback(value)),
+      getMemoContent: (name) => ipcRenderer.invoke('get-memo-content', name),
+      saveMemoContent: (name, content) => ipcRenderer.invoke('save-memo-content', name, content)
     })
+    // contextBridge.exposeInMainWorld('electronAPI', {
+    //   getMemoContent: (callback) =>
+    //     ipcRenderer.invoke('get-memo-content', (_event, value) => callback(value))
+    // })
   } catch (error) {
     console.error(error)
   }

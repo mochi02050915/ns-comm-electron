@@ -2,7 +2,7 @@
 // import Versions from './components/Versions.vue'
 import { RouterView } from 'vue-router'
 
-const folder = () => window.electron.ipcRenderer.send('ping')
+// const folder = () => window.electron.ipcRenderer.send('ping')
 </script>
 
 <template>
@@ -18,6 +18,9 @@ const folder = () => window.electron.ipcRenderer.send('ping')
         </el-menu-item>
         <el-menu-item index="3" route="/counter">
           <span>Counter</span>
+        </el-menu-item>
+        <el-menu-item index="4" route="/memo">
+          <span>Memo</span>
         </el-menu-item>
       </el-menu>
     </el-col>
